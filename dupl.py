@@ -4,7 +4,7 @@ import hashlib
 
 def findDup(parentFolder):
     dups = {}
-    for dirName, subdirs, filelist in os.walk(parentFolder):
+    for dirName, subdirs, fileList in os.walk(parentFolder):
         print('Scanning %s...' % dirName)
         for filename in fileList:
             path = os.path.join(dirName, filename)
@@ -36,4 +36,31 @@ def hashfile(path, blocksize = 65536):
     afile.close()
     return hasher.hexdigest()
     
+def printResults(dict1):
+    results = list(filter(lambda x: len(x) > 1, dict1.values()))
+    if len(results) > 0:
+        print('Duplicates Found:')
+        print('The following files contain identical content:')
+        print('--------------------')
+        for result in results:
+            for subresult in result:
+                print('\t\t%s' % subresult)
+            print('--------------')
+            
+    else:
+        print('No duplicate files found.')
+        
 
+if __name__ == '__main__':
+    if len(sys.argv) > 1:
+        dups = {}
+        folders = sys.argv[1:]
+        for i in folders:
+            if os.path.exists(i):
+                joinDicts(dups, findDup(i))
+            else:
+                print('%s is not a valid path, please verify' % i)
+                sys.exit()
+        printResults(dups)
+    else:
+        print('Usage: python3 dupl.py folder or python3 dupl.py folder1 folder2')
